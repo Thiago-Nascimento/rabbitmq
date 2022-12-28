@@ -17,8 +17,8 @@ export class AppController {
   async nest(@Req() request: Request){
     const server = new RabbitmqServer('amqp://admin:admin@rabbitmq:5672')
     await server.start();
-    await server.publishInQueue('express', JSON.stringify(request.body));
-    // await server.publishInQueue('produtos', JSON.stringify(request.body));
+    // await server.publishInQueue('express', JSON.stringify(request.body));
+    await server.publishInQueue('produtos', JSON.stringify(request.body));
     // await server.publishInExchange('amq.direct','rota2', JSON.stringify(request.body));
     return request.body
   }
