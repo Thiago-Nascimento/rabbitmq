@@ -1,13 +1,42 @@
+version: "3"
+
 services:
-    rabbitmq:
-        image: rabbitmq:3-management
-        container_name: rabbitmq
-        restart: always
-        ports:
-            - 5672:5672
-            - 15672:15672
-        volumes:
-            - ./dados:/var/lib/rabbitmq/
-        environment:
-            - RABBITMQ_DEFAULT_USER=admin
-            - RABBITMQ_DEFAULT_PASS=123456
+
+  express:
+    build: ./express
+    entrypoint: ./.docker/entrypoint.sh
+    container_name: rabbitmq-express
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - 4001:3000
+    volumes:
+      - ./express:/home/node/express
+    depends_on: 
+      - rabbitmq
+
+  nest:
+    build: ./nest
+    entrypoint: ./.docker/entrypoint.sh
+    container_name: rabbitmq-nest
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - 4000:3000
+    volumes:
+      - ./nest:/home/node/nest
+    depends_on: 
+      - rabbitmq
+
+  rabbitmq:
+    image: "rabbitmq:3.8-management-alpine"
+    container_name: rabbitmq
+    hostname: rabbitmq
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    volumes:
+      - "./.rabbitmq_data:/var/lib/rabbitmq/mnesia"
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
